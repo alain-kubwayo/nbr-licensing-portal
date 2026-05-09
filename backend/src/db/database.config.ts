@@ -11,7 +11,7 @@ const AppDataSource = new DataSource({
   entities: ['dist/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrationsTableName: 'pg_migrations',
-  migrations: ['dist/src/db/__migrations__/*{.ts,.js}'],
+  migrations: ['dist/**/__migrations__/*{.ts,.js}'],
 });
 
 export default AppDataSource;
