@@ -30,11 +30,8 @@ export class UserService {
       passwordHash: hashedPassword,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { passwordHash, ...createdUser } =
-      await this.userRepository.save(user);
-
-    return createdUser;
+    const createdUser = await this.userRepository.save(user);
+    return this.removeSensitiveFields(createdUser);
   }
 
   async getById(id: string) {
@@ -57,6 +54,12 @@ export class UserService {
       );
     }
     return user;
+  }
+
+  removeSensitiveFields(user: UserEntity) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, ...exposableUser } = user;
+    return exposableUser;
   }
 
   protected async getUserByPropNullable(

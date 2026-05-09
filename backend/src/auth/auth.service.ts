@@ -62,6 +62,8 @@ export class AuthService {
     const userId = signedTokenPayload.email;
 
     const user = await this.usersService.findByEmail(userId);
-    return user;
+    if (!user) return null;
+
+    return this.usersService.removeSensitiveFields(user);
   }
 }
