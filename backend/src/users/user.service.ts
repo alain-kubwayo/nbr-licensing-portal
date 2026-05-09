@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
+import { HashEncryption } from '../common/utils/hash.util';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './user.entity';
 
 @Injectable()
@@ -12,10 +14,35 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly hashEncryption: HashEncryption,
   ) {}
+
+  async createUser(createUserDto: CreateUserDto) {
+    await this.findAndThrow({
+      email: createUserDto.email,
+    });
+
+    const hashedPassword = await this.hashEncryption.hash(
+      createUserDto.password,
+    );
+    const user = this.userRepository.create({
+      ...createUserDto,
+      passwordHash: hashedPassword,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, ...createdUser } =
+      await this.userRepository.save(user);
+
+    return createdUser;
+  }
 
   async getById(id: string) {
     return await this.findOrThrow({ id });
+  }
+
+  async findByEmail(email: string) {
+    return await this.getUserByPropNullable({ email });
   }
 
   async getAll() {
