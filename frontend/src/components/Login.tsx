@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import { Link } from "react-router";
 
 
 const Login = () => {
@@ -14,14 +15,14 @@ const Login = () => {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto m-4 rounded-2xl w-full max-w-md mx-auto">
         <CardHeader>
             <CardTitle>Login</CardTitle>
             <CardDescription>
                 Enter your credentials to continue
             </CardDescription>
             <CardAction>
-                <Button variant="link">Create Account</Button>
+                <Link to="/register">Create Account</Link>
             </CardAction>
         </CardHeader>
         <CardContent>

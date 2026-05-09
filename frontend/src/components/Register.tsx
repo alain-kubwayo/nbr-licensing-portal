@@ -45,27 +45,13 @@ const Register = () => {
   }
 
   return (
-    <div style={{ 
-      position: "relative", 
-      background: "white", 
-      border: "1px solid black",
-      padding: "2rem",
-      margin: "1rem",
-      borderRadius: ".5rem",
-      fontFamily: "Arial",
-      maxWidth: "max-content"
-     }}>
+    <div className="relative bg-white border border-black p-4 m-4 rounded-2xl w-full max-w-md mx-auto">
       <form onSubmit={onSubmit}>
-        <div style={{ position: "absolute", top: ".5rem", right: ".5rem" }}>
+        <div className="absolute top-2 right-5">
           {currentStepIndex + 1} / {steps.length}
         </div>
         {step}
-        <div style={{ 
-          marginTop: "1rem",
-          display: "flex",
-          gap: ".5rem",
-          justifyContent: "flex-end"
-         }}>
+        <div className="mt-4 flex gap-2 justify-end">
           {!isFirstStep && <Button type="button" onClick={back}>Back</Button>}
           <Button type="submit">{isLastStep ? "Create" : "Next" }</Button>
          </div>
