@@ -1,4 +1,5 @@
 import FormWrapper from "./FormWrapper";
+import { Input } from "./ui/input";
 
 type AccountData = {
     firstName: string
@@ -15,13 +16,13 @@ const AccountForm = ({ firstName, lastName, email, password, updateFields }: Acc
   return (
     <FormWrapper title="Account Details">
         <label>First Name</label>
-        <input autoFocus required type="text" value={firstName} onChange={e => updateFields({ firstName: e.target.value })} />
+        <Input autoFocus required type="text" value={firstName} onChange={e => updateFields({ firstName: e.target.value })} />
         <label>Last Name</label>
-        <input required type="text" value={lastName} onChange={e => updateFields({ lastName: e.target.value })} />
+        <Input required type="text" value={lastName} onChange={e => updateFields({ lastName: e.target.value })} />
         <label>Email</label>
-        <input required type="email" value={email} onChange={e => updateFields({ email: e.target.value })} />
+        <Input required type="email" value={email} onChange={e => updateFields({ email: e.target.value })} />
         <label>Password</label>
-        <input required type="password" value={password} onChange={e => updateFields({ password: e.target.value })} />
+        <Input required type="password" value={password} onChange={e => updateFields({ password: e.target.value })} />
     </FormWrapper>
   )
 }

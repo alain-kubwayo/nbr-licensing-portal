@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useRegister } from "../hooks/useRegister"
 import AccountForm from "./AccountForm";
 import BankForm from "./BankForm";
+import { Button } from "./ui/button";
 
 type FormData = {
   bankName: string,
@@ -65,8 +66,8 @@ const Register = () => {
           gap: ".5rem",
           justifyContent: "flex-end"
          }}>
-          {!isFirstStep && <button type="button" onClick={back}>Back</button>}
-          <button type="submit">{isLastStep ? "Create" : "Next" }</button>
+          {!isFirstStep && <Button type="button" onClick={back}>Back</Button>}
+          <Button type="submit">{isLastStep ? "Create" : "Next" }</Button>
          </div>
       </form>
     </div>

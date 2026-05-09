@@ -1,4 +1,5 @@
 import FormWrapper from "./FormWrapper";
+import { Input } from "./ui/input";
 
 type BankData = {
     bankName: string
@@ -15,11 +16,11 @@ const BankForm = ({ bankName, registrationNumber, bankAddress, updateFields }: B
   return (
     <FormWrapper title="Bank Info.">
         <label>Bank Name</label>
-        <input autoFocus required type="text" value={bankName} onChange={e => updateFields({ bankName: e.target.value })} />
+        <Input autoFocus required type="text" value={bankName} onChange={e => updateFields({ bankName: e.target.value })} />
         <label>Registration Number</label>
-        <input required type="text" value={registrationNumber} onChange={e => updateFields({ registrationNumber: e.target.value })} />
+        <Input required type="text" value={registrationNumber} onChange={e => updateFields({ registrationNumber: e.target.value })} />
         <label>Bank Address</label>
-        <input required type="text" value={bankAddress}  onChange={e => updateFields({ bankAddress: e.target.value })} />
+        <Input required type="text" value={bankAddress}  onChange={e => updateFields({ bankAddress: e.target.value })} />
     </FormWrapper>
   )
 }
