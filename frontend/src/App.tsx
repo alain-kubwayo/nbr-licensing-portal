@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 import ApplicationList from "./pages/ApplicationList";
+import ApplicationDetail from "./pages/ApplicationDetail";
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="applications" element={<ApplicationList />} />
+          <Route path="applications/:id" element={<ApplicationDetail />} />
         </Route>
       </Routes>
     </BrowserRouter>

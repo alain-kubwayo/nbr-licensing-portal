@@ -129,7 +129,7 @@ const ApplicationForm = ({ subject, onCancel }: ApplicationFormProps) => {
             value={data.institutionType}
             onValueChange={(value) => updateFields({ institutionType: value })}
           >
-            <SelectTrigger className="w-full max-w-48">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -149,7 +149,7 @@ const ApplicationForm = ({ subject, onCancel }: ApplicationFormProps) => {
             value={data.applicationType}
             onValueChange={(value) => updateFields({ applicationType: value })}
           >
-            <SelectTrigger className="w-full max-w-48">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

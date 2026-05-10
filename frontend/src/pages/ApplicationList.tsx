@@ -24,9 +24,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import ApplicationForm from "./ApplicationForm";
 import { useState } from "react";
+import { Link } from "react-router";
 
 const ApplicationList = () => {
-    const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   return (
     <div>
       <AlertDialog open={open} onOpenChange={setOpen}>
@@ -41,7 +42,7 @@ const ApplicationList = () => {
           </AlertDialogTrigger>
         </div>
 
-        <AlertDialogContent>
+        <AlertDialogContent className="!max-w-2xl">
           <ApplicationForm onCancel={() => setOpen(false)} />
         </AlertDialogContent>
       </AlertDialog>
@@ -73,7 +74,9 @@ const ApplicationList = () => {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>View</DropdownMenuItem>
+                  <Link to="/dashboard/applications/1">
+                    <DropdownMenuItem>View</DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem>Edit</DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem variant="destructive">
