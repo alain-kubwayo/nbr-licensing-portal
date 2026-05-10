@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./components/layouts/DashboardLayout";
+import ApplicationList from "./pages/ApplicationList";
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
         <Route  path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
+          <Route path="applications" element={<ApplicationList />} />
         </Route>
       </Routes>
     </BrowserRouter>

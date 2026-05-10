@@ -1,6 +1,5 @@
 import {  
   LayoutDashboard,
-  FilePlus,
   FileText,
   ClipboardList,
   ShieldCheck,
@@ -25,7 +24,6 @@ type User = {
 export const sidebarLinks = {
   APPLICANT: [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "New Application", href: "/dashboard/applications/new", icon: FilePlus },
     { label: "My Applications", href: "/dashboard/applications", icon: FileText },
   ],
 
