@@ -42,7 +42,6 @@ const Login = ({ email, password }: LoginFormProps) => {
             <label>Password</label>
             <Input required type="password" value={password} onChange={e => updateFields({ password: e.target.value })} />
             <p className="flex items-end">
-                {/* No account yet? */}
                 <Link className="ml-2 underline text-blue-700" to="/register">Register</Link>
             </p>
             <div className="mt-4 flex w-full justify-end">
