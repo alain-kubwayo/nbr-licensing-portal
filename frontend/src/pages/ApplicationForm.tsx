@@ -27,8 +27,10 @@ const INITIAL_DATA: ApplicationData = {
 };
 
 type ApplicationFormProps = ApplicationData & {
-  updateFields: (fields: Partial<ApplicationData>) => void;
   onCancel: () => void;
+  mode?: "create" | "edit";
+  // updateFields: (fields: Partial<ApplicationData>) => void;
+  initialApplicationData: Partial<ApplicationData>;
 };
 
 const institutionTypes = [
@@ -47,8 +49,15 @@ const applicationTypes = [
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-const ApplicationForm = ({ subject, onCancel }: ApplicationFormProps) => {
-  const [data, setData] = useState(INITIAL_DATA);
+const ApplicationForm = ({ 
+  onCancel, 
+  mode = "create",
+  initialApplicationData 
+}: ApplicationFormProps) => {
+  const [data, setData] = useState<ApplicationData>({
+    ...INITIAL_DATA,
+    ...initialApplicationData,
+  });
   const [errors, setErrors] = useState<string[]>([]);
   function updateFields(fields: Partial<ApplicationData>) {
     setData((prev) => {
@@ -65,11 +74,10 @@ const ApplicationForm = ({ subject, onCancel }: ApplicationFormProps) => {
     if (!data.institutionType) newErrors.push("Institution type is required");
     if (!data.applicationType) newErrors.push("Application type is required");
 
-    if (data.supportingDocuments.length === 0) {
+    if (mode === "create" && data.supportingDocuments.length === 0) {
       newErrors.push("At least one document is required");
     }
 
-    // file size validation
     data.supportingDocuments.forEach((file) => {
       if (file.size > MAX_FILE_SIZE) {
         newErrors.push(`${file.name} exceeds 5MB limit`);
@@ -115,12 +123,16 @@ const ApplicationForm = ({ subject, onCancel }: ApplicationFormProps) => {
             </ul>
           </div>
         )}
-        <FormWrapper title="New License Application">
+        <FormWrapper
+          title={
+            mode === "edit" ? "Edit License Application" : "New License Application"
+          }
+        >
           <label>Subject Line</label>
           <Input
             autoFocus
             type="text"
-            value={subject}
+            value={data.subject}
             onChange={(e) => updateFields({ subject: e.target.value })}
           />
           <label>Institution Type</label>
@@ -182,7 +194,9 @@ const ApplicationForm = ({ subject, onCancel }: ApplicationFormProps) => {
             >
               Cancel
             </Button>
-            <Button type="submit">Login</Button>
+            <Button type="submit">
+              {mode === "edit" ? "Save changes" : "Submit"}
+            </Button>
           </div>
         </FormWrapper>
       </form>
