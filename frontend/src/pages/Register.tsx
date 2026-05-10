@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { useRegister } from "../hooks/useRegister"
-import AccountForm from "./AccountForm";
-import BankForm from "./BankForm";
-import { Button } from "./ui/button";
+import AccountForm from "../components/AccountForm";
+import BankForm from "../components/BankForm";
+import { Button } from "../components/ui/button";
+import { Link } from "react-router";
 
 type FormData = {
   bankName: string,
@@ -51,9 +52,14 @@ const Register = () => {
           {currentStepIndex + 1} / {steps.length}
         </div>
         {step}
-        <div className="mt-4 flex gap-2 justify-end">
-          {!isFirstStep && <Button type="button" onClick={back}>Back</Button>}
-          <Button type="submit">{isLastStep ? "Create" : "Next" }</Button>
+        <div className="mt-4 flex gap-2 justify-between">
+          <p className="flex items-end">
+            <Link className="ml-2 underline text-blue-700" to="/">Login</Link>
+          </p>
+          <div>
+            {!isFirstStep && <Button type="button" onClick={back}>Back</Button>}
+            <Button type="submit">{isLastStep ? "Create" : "Next" }</Button>
+          </div>
          </div>
       </form>
     </div>
