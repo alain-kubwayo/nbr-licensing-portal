@@ -9,6 +9,7 @@ import UserManagement from "./pages/UserManagement";
 import Approvals from "./pages/Approvals";
 import AuthProvider from "./auth/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import { Toaster } from "sonner";
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      <Toaster richColors position="top-center" closeButton />
     </AuthProvider>
   )
 }

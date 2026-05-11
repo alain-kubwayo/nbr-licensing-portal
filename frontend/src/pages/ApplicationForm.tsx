@@ -2,7 +2,9 @@ import { useState, type FormEvent } from "react";
 import FormWrapper from "../components/FormWrapper";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { toast } from "sonner";
 import { api } from "@/services/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 import {
   Select,
   SelectContent,
@@ -83,41 +85,45 @@ const ApplicationForm = ({
 
     if (newErrors.length > 0) return;
 
-    const created = await api.post("/applications", {
-      institutionName: data.institutionName,
-      licenseType: data.licenseType,
-      notes: data.notes,
-    });
+    try {
+      const created = await api.post("/applications", {
+        institutionName: data.institutionName,
+        licenseType: data.licenseType,
+        notes: data.notes,
+      });
 
-    const createdData = created.data as unknown;
-    const applicationId = (() => {
-      if (!createdData || typeof createdData !== "object") return null;
-      const d = createdData as Record<string, unknown>;
-      if (d.data && typeof d.data === "object") {
-        const dd = d.data as Record<string, unknown>;
-        if (typeof dd.id === "string") return dd.id;
-      }
-      if (typeof d.id === "string") return d.id;
-      return null;
-    })();
+      const createdData = created.data as unknown;
+      const applicationId = (() => {
+        if (!createdData || typeof createdData !== "object") return null;
+        const d = createdData as Record<string, unknown>;
+        if (d.data && typeof d.data === "object") {
+          const dd = d.data as Record<string, unknown>;
+          if (typeof dd.id === "string") return dd.id;
+        }
+        if (typeof d.id === "string") return d.id;
+        return null;
+      })();
 
-    if (mode === "create") {
-      if (!applicationId) {
-        setErrors(["Application created but missing applicationId in response"]);
-        return;
+      if (mode === "create") {
+        if (!applicationId) {
+          setErrors(["Application created but missing applicationId in response"]);
+          return;
+        }
+
+        for (const file of data.supportingDocuments) {
+          const form = new FormData();
+          form.append("file", file);
+          await api.post(`/applications/${applicationId}/documents`, form, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
       }
 
-      for (const file of data.supportingDocuments) {
-        const form = new FormData();
-        form.append("file", file);
-        await api.post(`/applications/${applicationId}/documents`, form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
+      if (mode === "create" && applicationId) onCreated?.(applicationId);
+      onCancel();
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
     }
-
-    if (mode === "create" && applicationId) onCreated?.(applicationId);
-    onCancel();
   }
 
   return (

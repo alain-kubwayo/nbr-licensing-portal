@@ -37,16 +37,11 @@ export default function UserManagement() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-semibold">Users</h2>
-          <p className="text-sm text-muted-foreground">
-            {loading ? "Loading…" : `${rows.length} user${rows.length === 1 ? "" : "s"}`}
-          </p>
-        </div>
-        <button className="text-sm underline" onClick={() => void load()} disabled={loading}>
-          Refresh
-        </button>
+      <div>
+        <h2 className="text-xl font-semibold">Users</h2>
+        <p className="text-sm text-muted-foreground">
+          {loading ? "Loading…" : `${rows.length} user${rows.length === 1 ? "" : "s"}`}
+        </p>
       </div>
 
       {error && (

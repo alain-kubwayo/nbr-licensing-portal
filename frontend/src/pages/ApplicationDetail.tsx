@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { FileText, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import { api } from "@/services/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { useAuth } from "@/auth/useAuth";
 import {
   AlertDialog,
@@ -156,8 +158,10 @@ const ApplicationDetail = () => {
                           ]);
                           setApp(appRes.data.data);
                           setDocs(docsRes.data.data ?? []);
-                        } catch {
-                          setError("Failed to resubmit application");
+                        } catch (err) {
+                          const msg = getApiErrorMessage(err, "Failed to resubmit application");
+                          setError(msg);
+                          toast.error(msg);
                         } finally {
                           setSubmitting(false);
                           setLoading(false);

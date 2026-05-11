@@ -4,7 +4,9 @@ import AccountForm from "../components/AccountForm";
 import BankForm from "../components/BankForm";
 import { Button } from "../components/ui/button";
 import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 import { api } from "@/services/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 type FormData = {
   bankName: string,
@@ -50,8 +52,12 @@ const Register = () => {
       role: "APPLICANT",
     };
 
-    await api.post("/users", payload);
-    navigate("/");
+    try {
+      await api.post("/users", payload);
+      navigate("/");
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
+    }
   }
 
   return (

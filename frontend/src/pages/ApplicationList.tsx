@@ -97,13 +97,8 @@ const ApplicationList = () => {
           />
         </AlertDialogContent>
       </AlertDialog>
-      <div className="py-4 flex items-center justify-between gap-3">
-        <div className="text-sm text-muted-foreground">
-          {loading ? "Loading…" : `${rows.length} application${rows.length === 1 ? "" : "s"}`}
-        </div>
-        <Button variant="outline" onClick={() => void load()} disabled={loading}>
-          Refresh
-        </Button>
+      <div className="py-4 text-sm text-muted-foreground">
+        {loading ? "Loading…" : `${rows.length} application${rows.length === 1 ? "" : "s"}`}
       </div>
       {error && (
         <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">

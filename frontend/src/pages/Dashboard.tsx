@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { api } from "@/services/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { useAuth } from "@/auth/useAuth";
 import {
   AlertDialog,
@@ -259,6 +261,8 @@ const Dashboard = () => {
                               try {
                                 await api.patch(`/applications/${a.id}/start-review`);
                                 await load();
+                              } catch (err) {
+                                toast.error(getApiErrorMessage(err));
                               } finally {
                                 setSubmitting(false);
                               }
@@ -292,6 +296,8 @@ const Dashboard = () => {
                               try {
                                 await api.patch(`/applications/${a.id}/complete-review`);
                                 await load();
+                              } catch (err) {
+                                toast.error(getApiErrorMessage(err));
                               } finally {
                                 setSubmitting(false);
                               }
@@ -346,6 +352,8 @@ const Dashboard = () => {
                       });
                       setRequestInfoOpen(false);
                       await load();
+                    } catch (err) {
+                      toast.error(getApiErrorMessage(err));
                     } finally {
                       setSubmitting(false);
                     }

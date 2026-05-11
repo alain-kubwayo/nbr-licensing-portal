@@ -3,7 +3,9 @@ import FormWrapper from "../components/FormWrapper";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 import { api } from "@/services/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 type LoginData = {
     email: string
@@ -26,8 +28,12 @@ const Login = () => {
 
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        await api.post("/auth/login", data);
-        navigate("/dashboard");
+        try {
+          await api.post("/auth/login", data);
+          navigate("/dashboard");
+        } catch (err) {
+          toast.error(getApiErrorMessage(err));
+        }
     }
 
   return (

@@ -41,7 +41,13 @@ api.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const isLoginAttempt =
+      error.config?.method?.toLowerCase() === "post" &&
+      String(error.config?.url ?? "").includes("auth/login");
+
+    // Wrong password returns 401; do not clear session or hard-redirect so the UI can show the message.
+    if (status === 401 && !isLoginAttempt) {
       localStorage.removeItem(TOKEN_KEY);
       window.dispatchEvent(new Event("auth:changed"));
       if (window.location.pathname !== "/") window.location.href = "/";

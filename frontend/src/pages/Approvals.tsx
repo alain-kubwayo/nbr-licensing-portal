@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { api } from "@/services/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
@@ -62,16 +64,11 @@ export default function Approvals() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-semibold">Awaiting Approval</h2>
-          <p className="text-sm text-muted-foreground">
-            {loading ? "Loading…" : `${awaiting.length} application${awaiting.length === 1 ? "" : "s"}`}
-          </p>
-        </div>
-        <Button variant="outline" onClick={() => void load()} disabled={loading}>
-          Refresh
-        </Button>
+      <div>
+        <h2 className="text-xl font-semibold">Awaiting Approval</h2>
+        <p className="text-sm text-muted-foreground">
+          {loading ? "Loading…" : `${awaiting.length} application${awaiting.length === 1 ? "" : "s"}`}
+        </p>
       </div>
 
       {error && (
@@ -185,6 +182,8 @@ export default function Approvals() {
                   });
                   setOpen(null);
                   await load();
+                } catch (err) {
+                  toast.error(getApiErrorMessage(err));
                 } finally {
                   setSubmitting(false);
                 }
