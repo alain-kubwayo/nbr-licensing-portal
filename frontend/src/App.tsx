@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 import ApplicationList from "./pages/ApplicationList";
 import ApplicationDetail from "./pages/ApplicationDetail";
+import UserManagement from "./pages/UserManagement";
 import AuthProvider from "./auth/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
 
@@ -22,6 +23,7 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="applications" element={<ApplicationList />} />
               <Route path="applications/:id" element={<ApplicationDetail />} />
+              <Route path="users" element={<UserManagement />} />
             </Route>
           </Route>
         </Routes>

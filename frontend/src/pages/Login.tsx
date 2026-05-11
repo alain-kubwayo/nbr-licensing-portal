@@ -15,11 +15,7 @@ const INITIAL_DATA: LoginData = {
   password: ""
 }
 
-type LoginFormProps = LoginData & {
-    updateFields: (fields: Partial<LoginData>) => void
-}
-
-const Login = ({ email, password }: LoginFormProps) => {
+const Login = () => {
     const [data, setData] = useState(INITIAL_DATA);
     const navigate = useNavigate();
     function updateFields(fields: Partial<LoginData>) {
@@ -39,9 +35,9 @@ const Login = ({ email, password }: LoginFormProps) => {
         <form onSubmit={onSubmit}>
         <FormWrapper title="Login">
             <label>Email</label>
-            <Input autoFocus required type="email" value={email} onChange={e => updateFields({ email: e.target.value })} />
+            <Input autoFocus required type="email" value={data.email} onChange={e => updateFields({ email: e.target.value })} />
             <label>Password</label>
-            <Input required type="password" value={password} onChange={e => updateFields({ password: e.target.value })} />
+            <Input required type="password" value={data.password} onChange={e => updateFields({ password: e.target.value })} />
             <p className="flex items-end">
                 <Link className="ml-2 underline text-blue-700" to="/register">Register</Link>
             </p>
