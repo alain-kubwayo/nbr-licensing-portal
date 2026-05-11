@@ -1,6 +1,6 @@
 # NBR Licensing Portal — Backend
 
-Bank Licensing & Compliance Portal API built with NestJS, TypeORM, and PostgreSQL.
+Bank Licensing & Compliance Portal API built with NestJS.
 
 ## Prerequisites
 
@@ -8,7 +8,7 @@ Bank Licensing & Compliance Portal API built with NestJS, TypeORM, and PostgreSQ
 - pnpm
 - Docker (for the database)
 
-## Quick Start
+## Project setup
 
 ### 1. Clone and install dependencies
 
@@ -60,9 +60,13 @@ pnpm start:dev
 
 The API is available at `http://localhost:4000/api/v1`.
 
-Swagger documentation is available at `http://localhost:4000/docs`.
-
 ---
+
+## Interactive API Documentation (Swagger UI)
+
+The API ships with a fully interactive Swagger UI powered by `@nestjs/swagger`.
+
+**URL:** `http://localhost:4000/docs`
 
 ## Seeded Accounts
 
@@ -94,52 +98,3 @@ The seed creates 7 applications covering every lifecycle stage:
 | Frontier Forex Bureau       | REJECTED         | applicant1 | reviewer1 | approver |
 
 Each application has a full audit trail reflecting its lifecycle transitions.
-
----
-
-## API Overview
-
-All protected endpoints require `Authorization: Bearer <token>`.
-
-### Auth
-
-| Method | Path        | Access | Description      |
-| ------ | ----------- | ------ | ---------------- |
-| POST   | /auth/login | Public | Obtain JWT token |
-
-### Applications
-
-| Method | Path                              | Roles                     | Description              |
-| ------ | --------------------------------- | ------------------------- | ------------------------ |
-| POST   | /applications                     | APPLICANT                 | Create draft             |
-| GET    | /applications                     | ALL                       | List applications        |
-| GET    | /applications/:id                 | ALL                       | Get application          |
-| GET    | /applications/:id/audit-trail     | REVIEWER, APPROVER, ADMIN | Get audit trail          |
-| PATCH  | /applications/:id/submit          | APPLICANT                 | Submit for review        |
-| PATCH  | /applications/:id/resubmit        | APPLICANT                 | Resubmit after info req  |
-| PATCH  | /applications/:id/start-review    | REVIEWER                  | Assign self as reviewer  |
-| PATCH  | /applications/:id/request-info    | REVIEWER                  | Request more information |
-| PATCH  | /applications/:id/complete-review | REVIEWER                  | Complete review          |
-| PATCH  | /applications/:id/approve         | APPROVER                  | Approve application      |
-| PATCH  | /applications/:id/reject          | APPROVER                  | Reject application       |
-
-### Documents
-
-| Method | Path                                        | Roles     | Description       |
-| ------ | ------------------------------------------- | --------- | ----------------- |
-| POST   | /applications/:id/documents                 | APPLICANT | Upload document   |
-| GET    | /applications/:id/documents                 | ALL       | List documents    |
-| GET    | /applications/:id/documents/:docId/download | ALL       | Download document |
-
----
-
-## Application Lifecycle
-
-```
-DRAFT → SUBMITTED → UNDER_REVIEW → INFO_REQUESTED → RESUBMITTED
-                                 ↓
-                         REVIEW_COMPLETED → APPROVED
-                                          → REJECTED
-```
-
-Documents can only be uploaded when the application is in `DRAFT` or `INFO_REQUESTED` status.
