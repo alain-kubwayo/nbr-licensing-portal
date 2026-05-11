@@ -7,6 +7,7 @@ import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { LocalStrategy } from './auth/strategies/local.strategies';
 import DatabaseModule from './db/database.module';
+import { DocumentModule } from './documents/document.module';
 import { UserModule } from './users/user.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { UserModule } from './users/user.module';
     AuthModule,
     AuditModule,
     ApplicationModule,
+    DocumentModule,
   ],
   controllers: [AppController],
   providers: [AppService, LocalStrategy],

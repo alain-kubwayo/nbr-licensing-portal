@@ -30,6 +30,9 @@ export class ApplicationEntity extends AbstractEntity {
   @Column({ type: 'text', nullable: true })
   decisionNote?: string;
 
+  @Column({ type: 'int', default: 1 })
+  revisionNumber: number;
+
   @ManyToOne(() => UserEntity)
   @JoinColumn()
   applicant: UserEntity;

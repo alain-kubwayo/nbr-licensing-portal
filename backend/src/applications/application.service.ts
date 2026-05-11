@@ -130,6 +130,7 @@ export class ApplicationService {
       const previousStatus = application.status;
       application.status = ApplicationStatus.RESUBMITTED;
       application.resubmissionNote = dto.resubmissionNote;
+      application.revisionNumber = application.revisionNumber + 1;
 
       const saved = await manager.save(ApplicationEntity, application);
 
