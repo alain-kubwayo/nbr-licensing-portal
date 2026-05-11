@@ -8,7 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuditService } from '../audit/audit.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -23,6 +23,7 @@ import { FinalizeApplicationDto } from './dto/finalize-application.dto';
 import { RequestInfoDto } from './dto/request-info.dto';
 import { ResubmitApplicationDto } from './dto/resubmit-application.dto';
 
+@ApiBearerAuth()
 @ApiTags('Applications')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('applications')

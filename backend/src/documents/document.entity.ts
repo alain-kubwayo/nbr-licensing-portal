@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -31,9 +32,11 @@ export class DocumentEntity {
   @Column({ length: 512 })
   originalName: string;
 
+  @Exclude()
   @Column({ length: 512 })
   storedName: string;
 
+  @Exclude()
   @Column({ length: 1024 })
   storagePath: string;
 

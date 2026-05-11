@@ -1,98 +1,161 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NBR Licensing Portal — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Bank Licensing & Compliance Portal API built with NestJS, TypeORM, and PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Prerequisites
 
-## Description
+- Node.js 20+
+- pnpm
+- Docker (for the database)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Quick Start
 
-## Project setup
+### 1. Clone and install dependencies
 
 ```bash
-$ pnpm install
+pnpm install
 ```
 
-## Compile and run the project
+### 2. Configure environment
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+cp .env.example .env
 ```
 
-## Run tests
+Edit `.env` with your values. The defaults work with the Docker Compose setup:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=nbr_licensing
+PORT=4000
+JWT_ACCESS_TOKEN_SECRET=change-me-to-a-strong-random-secret
+```
+
+### 3. Start the database
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm docker-db:start
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 4. Run migrations
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm migration:run
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 5. Seed the database
 
-## Resources
+```bash
+pnpm seed
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 6. Start the API
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+pnpm start:dev
+```
 
-## Support
+The API is available at `http://localhost:4000/api/v1`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Swagger documentation is available at `http://localhost:4000/docs`.
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Seeded Accounts
 
-## License
+All accounts are created by `pnpm seed`. Passwords are hashed with bcrypt.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Role      | Email             | Password       |
+| --------- | ----------------- | -------------- |
+| ADMIN     | admin@nbr.rw      | Admin@1234     |
+| APPLICANT | applicant1@nbr.rw | Applicant@1234 |
+| APPLICANT | applicant2@nbr.rw | Applicant@1234 |
+| REVIEWER  | reviewer1@nbr.rw  | Reviewer@1234  |
+| REVIEWER  | reviewer2@nbr.rw  | Reviewer@1234  |
+| APPROVER  | approver@nbr.rw   | Approver@1234  |
+
+---
+
+## Seeded Applications
+
+The seed creates 7 applications covering every lifecycle stage:
+
+| Institution                 | Status           | Applicant  | Reviewer  | Approver |
+| --------------------------- | ---------------- | ---------- | --------- | -------- |
+| Kigali Commercial Bank Ltd  | DRAFT            | applicant1 | —         | —        |
+| Rwanda Microfinance Corp    | SUBMITTED        | applicant1 | —         | —        |
+| East Africa Savings Bank    | UNDER_REVIEW     | applicant2 | reviewer1 | —        |
+| Horizon Digital Finance     | INFO_REQUESTED   | applicant2 | reviewer1 | —        |
+| Great Lakes Investment Bank | REVIEW_COMPLETED | applicant1 | reviewer2 | —        |
+| Umurenge Cooperative Bank   | APPROVED         | applicant2 | reviewer2 | approver |
+| Frontier Forex Bureau       | REJECTED         | applicant1 | reviewer1 | approver |
+
+Each application has a full audit trail reflecting its lifecycle transitions.
+
+---
+
+## API Overview
+
+All protected endpoints require `Authorization: Bearer <token>`.
+
+### Auth
+
+| Method | Path        | Access   | Description         |
+| ------ | ----------- | -------- | ------------------- |
+| POST   | /auth/login | Public   | Obtain JWT token    |
+| GET    | /auth/me    | REVIEWER | Get current profile |
+
+### Applications
+
+| Method | Path                              | Roles                     | Description              |
+| ------ | --------------------------------- | ------------------------- | ------------------------ |
+| POST   | /applications                     | APPLICANT                 | Create draft             |
+| GET    | /applications                     | ALL                       | List applications        |
+| GET    | /applications/:id                 | ALL                       | Get application          |
+| GET    | /applications/:id/audit-trail     | REVIEWER, APPROVER, ADMIN | Get audit trail          |
+| PATCH  | /applications/:id/submit          | APPLICANT                 | Submit for review        |
+| PATCH  | /applications/:id/resubmit        | APPLICANT                 | Resubmit after info req  |
+| PATCH  | /applications/:id/start-review    | REVIEWER                  | Assign self as reviewer  |
+| PATCH  | /applications/:id/request-info    | REVIEWER                  | Request more information |
+| PATCH  | /applications/:id/complete-review | REVIEWER                  | Complete review          |
+| PATCH  | /applications/:id/approve         | APPROVER                  | Approve application      |
+| PATCH  | /applications/:id/reject          | APPROVER                  | Reject application       |
+
+### Documents
+
+| Method | Path                                        | Roles     | Description       |
+| ------ | ------------------------------------------- | --------- | ----------------- |
+| POST   | /applications/:id/documents                 | APPLICANT | Upload document   |
+| GET    | /applications/:id/documents                 | ALL       | List documents    |
+| GET    | /applications/:id/documents/:docId/download | ALL       | Download document |
+
+---
+
+## Application Lifecycle
+
+```
+DRAFT → SUBMITTED → UNDER_REVIEW → INFO_REQUESTED → RESUBMITTED
+                                 ↓
+                         REVIEW_COMPLETED → APPROVED
+                                          → REJECTED
+```
+
+Documents can only be uploaded when the application is in `DRAFT` or `INFO_REQUESTED` status.
+
+---
+
+## Available Scripts
+
+| Script                    | Description                                        |
+| ------------------------- | -------------------------------------------------- |
+| `pnpm start:dev`          | Start in watch mode                                |
+| `pnpm build`              | Compile TypeScript                                 |
+| `pnpm migration:run`      | Run all pending migrations                         |
+| `pnpm migration:generate` | Generate a new migration from entity changes       |
+| `pnpm migration:revert`   | Revert the last migration                          |
+| `pnpm seed`               | Seed the database with demo users and applications |
+| `pnpm docker-db:start`    | Start PostgreSQL via Docker Compose                |
+| `pnpm docker-db:stop`     | Stop PostgreSQL container                          |

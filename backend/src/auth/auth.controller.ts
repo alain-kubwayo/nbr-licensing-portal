@@ -1,14 +1,13 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExtractUserFromRequest } from '../common/decorators/extract-user.decorator';
-import { RequiredRoles } from '../common/decorators/required-roles.decorator';
 import { GenericResponse } from '../common/utils/http.utils';
-import { UserRole } from '../users/enums/user-role.enum';
 import { UserEntity } from '../users/user.entity';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RolesGuard } from './guards/roles.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -19,9 +18,9 @@ export class AuthController {
     return new GenericResponse('Login successful', payload);
   }
 
+  @ApiBearerAuth()
   @Get('me')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @RequiredRoles(UserRole.REVIEWER)
+  @UseGuards(JwtAuthGuard)
   getProfile(@ExtractUserFromRequest() user: UserEntity) {
     return new GenericResponse('Profile retrieved successfully', user);
   }

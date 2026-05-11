@@ -1,11 +1,18 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { GlobalExceptionFilter } from './filters/http-exception.filter';
 
 export const applyGlobalAppConfiguration = (app: INestApplication) => {
   app.use(helmet());
   app.setGlobalPrefix('api/v1');
   app.enableCors();
+  app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -13,6 +20,7 @@ export const applyGlobalAppConfiguration = (app: INestApplication) => {
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   configureSwagger(app);
   return app;
 };

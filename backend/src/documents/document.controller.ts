@@ -12,7 +12,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -26,6 +32,7 @@ import { buildMulterOptions } from './document.multer';
 import { DocumentService } from './document.service';
 import type { UploadedFile as UploadedFileType } from './uploaded-file.interface';
 
+@ApiBearerAuth()
 @ApiTags('Documents')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('applications/:applicationId/documents')
