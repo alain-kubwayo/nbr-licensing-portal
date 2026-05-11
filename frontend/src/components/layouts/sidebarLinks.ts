@@ -14,7 +14,7 @@ export const sidebarLinks = {
 
   REVIEWER: [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Assigned Applications", href: "/dashboard/reviews", icon: ClipboardList },
+    { label: "Applications", href: "/dashboard/applications", icon: ClipboardList },
   ],
 
   APPROVER: [
@@ -29,6 +29,7 @@ export const sidebarLinks = {
 
   ADMIN: [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { label: "Applications", href: "/dashboard/applications", icon: FileText },
     { label: "User Management", href: "/dashboard/users", icon: Users },
   ],
 };

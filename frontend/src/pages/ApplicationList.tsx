@@ -22,10 +22,12 @@ import {
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { ApplicationAuditTrailDialog } from "@/components/ApplicationAuditTrailDialog";
 import ApplicationForm from "./ApplicationForm";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { api } from "@/services/api";
+import { useAuth } from "@/auth/useAuth";
 
 type Application = {
   id: string;
@@ -37,10 +39,13 @@ type Application = {
 };
 
 const ApplicationList = () => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [auditOpen, setAuditOpen] = useState(false);
+  const [auditAppId, setAuditAppId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -62,6 +67,14 @@ const ApplicationList = () => {
   const rows = useMemo(() => {
     return [...items].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
   }, [items]);
+
+  const canSeeAuditTrail =
+    user?.role === "REVIEWER" || user?.role === "APPROVER" || user?.role === "ADMIN";
+
+  const openAuditTrail = (applicationId: string) => {
+    setAuditAppId(applicationId);
+    setAuditOpen(true);
+  };
 
   return (
     <div>
@@ -136,6 +149,11 @@ const ApplicationList = () => {
                       <Link to={`/dashboard/applications/${app.id}`}>
                         <DropdownMenuItem>View</DropdownMenuItem>
                       </Link>
+                      {canSeeAuditTrail && (
+                        <DropdownMenuItem onSelect={() => openAuditTrail(app.id)}>
+                          Audit trail
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem variant="destructive" disabled>
                         Delete
@@ -148,6 +166,15 @@ const ApplicationList = () => {
           )}
         </TableBody>
       </Table>
+
+      <ApplicationAuditTrailDialog
+        applicationId={auditAppId}
+        open={auditOpen}
+        onOpenChange={(next) => {
+          setAuditOpen(next);
+          if (!next) setAuditAppId(null);
+        }}
+      />
     </div>
   );
 };

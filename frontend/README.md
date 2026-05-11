@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# NBR Licensing Portal — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Bank Licensing & Compliance Portal web UI built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 20+
+- pnpm
 
-## React Compiler
+## Project setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Install dependencies
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Configure environment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+Edit `.env` with your values. Typical local dev points at the backend:
+
+```env
+VITE_API_BASE_URL=http://localhost:4000/api/v1
+```
+
+### 3. Start the app
+
+```bash
+pnpm dev
+```
+
+The UI is available at `http://localhost:5173` (default Vite port).
+
+---
+
+## Roles (what each user can do)
+
+This app supports multiple roles. You can use the seeded accounts from the backend (`backend/README.md`) to log in and explore each flow.
+
+- **APPLICANT**
+  - Create and manage their own applications (draft, submit, track status).
+  - Upload supporting documents on the application detail page.
+  - If a reviewer requests info (`INFO_REQUESTED`), the applicant can resubmit with a resubmission note.
+
+- **REVIEWER**
+  - See non-draft applications, start a review, request additional info, and complete the review.
+  - Can open an application's audit trail from the Reviewer dashboard table or from the Applications list.
+
+- **APPROVER**
+  - See applications awaiting approval (`REVIEW_COMPLETED`) and approve/reject with a required decision note.
+  - Can open an application's audit trail from the Approvals page or from the Applications list.
+
+- **ADMIN**
+  - View platform-wide dashboards and manage users (User Management).
+  - Can view the Applications list and open an application's audit trail.
+
+### Audit trail
+
+Staff roles (**REVIEWER**, **APPROVER**, **ADMIN**) can view an application's audit trail via a dialog that calls:
+
+- `GET /applications/:id/audit-trail`
