@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, ArrowLeft } from "lucide-react";
+import { FileText, ArrowLeft } from "lucide-react";
 import { api } from "@/services/api";
 
 type Application = {
@@ -52,32 +52,8 @@ const ApplicationDetail = () => {
     void load();
   }, [id]);
 
-  const submittedAt = useMemo(() => {
-    if (!app?.submittedAt) return "-";
-    return new Date(app.submittedAt).toLocaleString();
-  }, [app?.submittedAt]);
-
-  const createdAt = useMemo(() => {
-    if (!app?.createdAt) return "-";
-    return new Date(app.createdAt).toLocaleString();
-  }, [app?.createdAt]);
-
-  const download = async (documentId: string, filename: string) => {
-    if (!id) return;
-    const res = await api.get(
-      `/applications/${id}/documents/${documentId}/download`,
-      { responseType: "blob" },
-    );
-    const blob = res.data as Blob;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  };
+  const submittedAt = app?.submittedAt ? new Date(app.submittedAt).toLocaleString() : "-";
+  const createdAt = app?.createdAt ? new Date(app.createdAt).toLocaleString() : "-";
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -150,7 +126,7 @@ const ApplicationDetail = () => {
 
           <div className="flex flex-col gap-1">
             <span className="text-muted-foreground">Notes</span>
-            <span className="font-medium whitespace-pre-wrap break-words">{app.notes || "-"}</span>
+            <span className="font-medium whitespace-pre-wrap wrap-break-word">{app.notes || "-"}</span>
           </div>
           </>
           )}
@@ -179,15 +155,6 @@ const ApplicationDetail = () => {
                   </span>
                 </div>
               </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => void download(doc.id, doc.originalName)}
-              >
-                <Download className="w-4 h-4 mr-1" />
-                Download
-              </Button>
             </div>
           ))}
         </CardContent>
