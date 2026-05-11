@@ -3,7 +3,8 @@ import { useRegister } from "../hooks/useRegister"
 import AccountForm from "../components/AccountForm";
 import BankForm from "../components/BankForm";
 import { Button } from "../components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { api } from "@/services/api";
 
 type FormData = {
   bankName: string,
@@ -27,6 +28,7 @@ const INITIAL_DATA: FormData = {
 
 const Register = () => {
   const [data, setData] = useState(INITIAL_DATA);
+  const navigate = useNavigate();
   function updateFields(fields: Partial<FormData>) {
     setData(prev => {
       return {...prev, ...fields}
@@ -37,12 +39,19 @@ const Register = () => {
     <AccountForm {...data} updateFields={updateFields} />
   ]);
 
-  function onSubmit(e: FormEvent) {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if(!isLastStep) return next();
 
-    // POST data to create account
-    console.log("Successful account creation", data);
+    const payload = {
+      email: data.email,
+      name: `${data.firstName} ${data.lastName}`.trim(),
+      password: data.password,
+      role: "APPLICANT",
+    };
+
+    await api.post("/users", payload);
+    navigate("/");
   }
 
   return (

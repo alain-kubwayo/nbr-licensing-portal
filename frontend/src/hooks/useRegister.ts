@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from "react";
 
-export function useRegister(steps: ReactElement) {
+export function useRegister(steps: ReactElement[]) {
     const [currentStepIndex, setCurrentStepIndex] = useState(0); 
 
     function next() {

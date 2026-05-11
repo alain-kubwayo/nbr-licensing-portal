@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react";
 import FormWrapper from "../components/FormWrapper";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { api } from "@/services/api";
 
 type LoginData = {
     email: string
@@ -20,17 +21,19 @@ type LoginFormProps = LoginData & {
 
 const Login = ({ email, password }: LoginFormProps) => {
     const [data, setData] = useState(INITIAL_DATA);
+    const navigate = useNavigate();
     function updateFields(fields: Partial<LoginData>) {
         setData(prev => {
         return {...prev, ...fields}
         })
     }
 
-    function onSubmit(e: FormEvent) {
+    const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         // POST data to login into the account account
-        console.log("Successful login", data);
+        await api.post("/auth/login", data);
+        navigate("/dashboard");
     }
 
   return (
