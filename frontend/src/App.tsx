@@ -5,22 +5,28 @@ import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 import ApplicationList from "./pages/ApplicationList";
 import ApplicationDetail from "./pages/ApplicationDetail";
+import AuthProvider from "./auth/AuthProvider";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 function App() {
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route  path="/" element={<Login />} />
-        <Route  path="/register" element={<Register />} />
-        <Route  path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="applications" element={<ApplicationList />} />
-          <Route path="applications/:id" element={<ApplicationDetail />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route  path="/" element={<Login />} />
+          <Route  path="/register" element={<Register />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="applications" element={<ApplicationList />} />
+              <Route path="applications/:id" element={<ApplicationDetail />} />
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

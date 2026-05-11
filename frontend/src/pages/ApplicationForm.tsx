@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import FormWrapper from "../components/FormWrapper";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { api } from "@/services/api";
 import {
   Select,
   SelectContent,
@@ -13,46 +14,43 @@ import {
 } from "@/components/ui/select";
 
 type ApplicationData = {
-  subject: string;
-  institutionType: string;
-  applicationType: string;
+  institutionName: string;
+  licenseType: string;
+  notes: string;
   supportingDocuments: File[];
 };
 
 const INITIAL_DATA: ApplicationData = {
-  subject: "",
-  institutionType: "",
-  applicationType: "",
+  institutionName: "",
+  licenseType: "",
+  notes: "",
   supportingDocuments: [],
 };
 
-type ApplicationFormProps = ApplicationData & {
+type ApplicationFormProps = {
   onCancel: () => void;
   mode?: "create" | "edit";
-  // updateFields: (fields: Partial<ApplicationData>) => void;
-  initialApplicationData: Partial<ApplicationData>;
+  initialApplicationData?: Partial<ApplicationData>;
+  onCreated?: (applicationId: string) => void;
 };
-
-const institutionTypes = [
-  { label: "Commercial Bank", value: "Commercial Bank" },
-  { label: "Microfinance Institution", value: "Microfinance Institution" },
-  { label: "SACCO", value: "SACCO" },
-  { label: "Insurance Company", value: "Insurance Company" },
-  { label: "Forex Bureau", value: "Forex Bureau" },
-  { label: "FinTech", value: "FinTech" },
-];
 
 const applicationTypes = [
   { label: "New License", value: "New License" },
   { label: "Renewal", value: "Renewal" },
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = new Set([
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+]);
 
 const ApplicationForm = ({ 
   onCancel, 
   mode = "create",
-  initialApplicationData 
+  initialApplicationData = {},
+  onCreated,
 }: ApplicationFormProps) => {
   const [data, setData] = useState<ApplicationData>({
     ...INITIAL_DATA,
@@ -65,54 +63,65 @@ const ApplicationForm = ({
     });
   }
 
-  function onSubmit(e: FormEvent) {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const newErrors: string[] = [];
 
-    if (!data.subject.trim()) newErrors.push("Subject is required");
-    if (!data.institutionType) newErrors.push("Institution type is required");
-    if (!data.applicationType) newErrors.push("Application type is required");
-
+    if (!data.institutionName.trim()) newErrors.push("Institution name is required");
+    if (!data.licenseType) newErrors.push("License type is required");
     if (mode === "create" && data.supportingDocuments.length === 0) {
       newErrors.push("At least one document is required");
     }
 
-    data.supportingDocuments.forEach((file) => {
-      if (file.size > MAX_FILE_SIZE) {
-        newErrors.push(`${file.name} exceeds 5MB limit`);
-      }
-    });
+    for (const file of data.supportingDocuments) {
+      if (file.size > MAX_FILE_SIZE) newErrors.push(`${file.name} exceeds 5MB limit`);
+      if (file.type && !ALLOWED_MIME_TYPES.has(file.type)) newErrors.push(`${file.name} must be PDF, DOCX, PNG or JPEG`);
+    }
 
     setErrors(newErrors);
 
     if (newErrors.length > 0) return;
 
-    const formData = new FormData();
-
-    formData.append("subject", data.subject);
-    formData.append("institutionType", data.institutionType);
-    formData.append("applicationType", data.applicationType);
-
-    data.supportingDocuments.forEach((file, index) => {
-      formData.append(`supportingDocuments[${index}]`, file);
+    const created = await api.post("/applications", {
+      institutionName: data.institutionName,
+      licenseType: data.licenseType,
+      notes: data.notes,
     });
 
-    //   const response = await fetch("/api/applications", {
-    //     method: "POST",
-    //     body: formData,
-    //   })
+    const createdData = created.data as unknown;
+    const applicationId = (() => {
+      if (!createdData || typeof createdData !== "object") return null;
+      const d = createdData as Record<string, unknown>;
+      if (d.data && typeof d.data === "object") {
+        const dd = d.data as Record<string, unknown>;
+        if (typeof dd.id === "string") return dd.id;
+      }
+      if (typeof d.id === "string") return d.id;
+      return null;
+    })();
 
-    //   const result = await response.json()
+    if (mode === "create") {
+      if (!applicationId) {
+        setErrors(["Application created but missing applicationId in response"]);
+        return;
+      }
 
-    //   console.log(result)
+      for (const file of data.supportingDocuments) {
+        const form = new FormData();
+        form.append("file", file);
+        await api.post(`/applications/${applicationId}/documents`, form, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
+    }
 
-    // POST data to login into the account account
-    console.log("Successful application submission", data);
+    if (mode === "create" && applicationId) onCreated?.(applicationId);
+    onCancel();
   }
 
   return (
-    <div className="relative bg-white border border-black p-4 m-4 rounded-2xl w-full !max-w-2xl mx-auto">
+    <div className="relative bg-white border border-black p-4 m-4 rounded-2xl w-full max-w-2xl! mx-auto">
       <form onSubmit={onSubmit}>
         {errors.length > 0 && (
           <div className="mb-4 p-3 border border-red-500 bg-red-50 text-red-600 rounded-md">
@@ -132,41 +141,20 @@ const ApplicationForm = ({
           <Input
             autoFocus
             type="text"
-            value={data.subject}
-            onChange={(e) => updateFields({ subject: e.target.value })}
+            value={data.institutionName}
+            onChange={(e) => updateFields({ institutionName: e.target.value })}
           />
-          <label>Institution Type</label>
+          <label>License Type</label>
           <Select
-            items={institutionTypes}
-            value={data.institutionType}
-            onValueChange={(value) => updateFields({ institutionType: value })}
+            value={data.licenseType}
+            onValueChange={(value) => updateFields({ licenseType: value })}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Institution Type</SelectLabel>
-                {institutionTypes.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <label>Application Type</label>
-          <Select
-            items={applicationTypes}
-            value={data.applicationType}
-            onValueChange={(value) => updateFields({ applicationType: value })}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Application Type</SelectLabel>
+                <SelectLabel>License Type</SelectLabel>
                 {applicationTypes.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
@@ -175,10 +163,17 @@ const ApplicationForm = ({
               </SelectGroup>
             </SelectContent>
           </Select>
+          <label>Notes</label>
+          <Input
+            type="text"
+            value={data.notes}
+            onChange={(e) => updateFields({ notes: e.target.value })}
+          />
           <label>Supporting Documents</label>
           <Input
             type="file"
             multiple
+            accept=".pdf,.docx,.png,.jpg,.jpeg,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
             onChange={(e) =>
               updateFields({
                 supportingDocuments: Array.from(e.target.files || []),

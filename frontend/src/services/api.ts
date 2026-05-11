@@ -34,12 +34,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => {
     const token = getAccessTokenFromResponse(response.data);
-    if (typeof token === "string" && token) localStorage.setItem(TOKEN_KEY, token);
+    if (typeof token === "string" && token) {
+      localStorage.setItem(TOKEN_KEY, token);
+      window.dispatchEvent(new Event("auth:changed"));
+    }
     return response;
   },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
+      window.dispatchEvent(new Event("auth:changed"));
       if (window.location.pathname !== "/") window.location.href = "/";
     }
     return Promise.reject(error);

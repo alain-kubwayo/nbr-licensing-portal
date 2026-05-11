@@ -30,8 +30,6 @@ const Login = ({ email, password }: LoginFormProps) => {
 
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
-
-        // POST data to login into the account account
         await api.post("/auth/login", data);
         navigate("/dashboard");
     }

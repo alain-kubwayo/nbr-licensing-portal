@@ -1,123 +1,197 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogContent,
-} from "@/components/ui/alert-dialog";
-import { FileText, Download, ArrowLeft, Pencil } from "lucide-react";
-import ApplicationForm from "./ApplicationForm";
+import { FileText, Download, ArrowLeft } from "lucide-react";
+import { api } from "@/services/api";
 
-const documents = [
-  { name: "Business License.pdf", url: "#" },
-  { name: "ID Copy.pdf", url: "#" },
-  { name: "Financial Statement.pdf", url: "#" },
-];
+type Application = {
+  id: string;
+  status: string;
+  institutionName: string;
+  licenseType: string;
+  notes: string | null;
+  createdAt: string;
+  submittedAt: string | null;
+  finalizedAt: string | null;
+};
 
-const editInitialApplicationData = {
-  subject: "BK License Application",
-  institutionType: "Microfinance Institution",
-  applicationType: "New License",
+type DocumentItem = {
+  id: string;
+  originalName: string;
+  uploadedAt: string;
 };
 
 const ApplicationDetail = () => {
-  const [editOpen, setEditOpen] = useState(false);
+  const { id } = useParams();
+  const [app, setApp] = useState<Application | null>(null);
+  const [docs, setDocs] = useState<DocumentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!id) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const [appRes, docsRes] = await Promise.all([
+          api.get<{ data: Application }>(`/applications/${id}`),
+          api.get<{ data: DocumentItem[] }>(`/applications/${id}/documents`),
+        ]);
+        setApp(appRes.data.data);
+        setDocs(docsRes.data.data ?? []);
+      } catch {
+        setError("Failed to load application");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void load();
+  }, [id]);
+
+  const submittedAt = useMemo(() => {
+    if (!app?.submittedAt) return "-";
+    return new Date(app.submittedAt).toLocaleString();
+  }, [app?.submittedAt]);
+
+  const createdAt = useMemo(() => {
+    if (!app?.createdAt) return "-";
+    return new Date(app.createdAt).toLocaleString();
+  }, [app?.createdAt]);
+
+  const download = async (documentId: string, filename: string) => {
+    if (!id) return;
+    const res = await api.get(
+      `/applications/${id}/documents/${documentId}/download`,
+      { responseType: "blob" },
+    );
+    const blob = res.data as Blob;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <div className="flex justify-end">
-        <AlertDialog open={editOpen} onOpenChange={setEditOpen}>
-          <Button 
-            variant="outline"
-            onClick={() => setEditOpen(true)}
-          >
-            <div className="flex gap-2 items-center">
-              <Pencil />
-              <p>Make changes</p>
-            </div>
+      <div className="flex items-center justify-between gap-4">
+        <Link to="/dashboard/applications">
+          <Button variant="outline" className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back
           </Button>
-          <AlertDialogContent className="!max-w-2xl">
-            <ApplicationForm
-              key={editOpen ? "edit-open" : "edit-closed"}
-              mode="edit"
-              initialApplicationData={editInitialApplicationData}
-              onCancel={() => setEditOpen(false)}
-            />
-          </AlertDialogContent>
-        </AlertDialog>
+        </Link>
+        <Button variant="outline" onClick={() => window.location.reload()} disabled={loading}>
+          Refresh
+        </Button>
       </div>
+
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       <Card>
         <CardHeader>
-          <CardTitle>Application Details</CardTitle>
+          <CardTitle>
+            {loading ? "Application" : (app?.institutionName ?? "Application")}
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
+          {loading || !app ? (
+            <div>Loading...</div>
+          ) : (
+            <>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Subject Line</span>
-            <span className="font-medium">BK License Application</span>
+            <span className="text-muted-foreground">Institution</span>
+            <span className="font-medium">{app.institutionName}</span>
           </div>
 
           <Separator />
 
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Institution Type</span>
-            <span className="font-medium">Microfinance</span>
-          </div>
-
-          <Separator />
-
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Application Type</span>
-            <span className="font-medium">New License</span>
+            <span className="text-muted-foreground">License Type</span>
+            <span className="font-medium">{app.licenseType}</span>
           </div>
 
           <Separator />
 
           <div className="flex justify-between">
             <span className="text-muted-foreground">Status</span>
-            <span className="font-medium">Under review</span>
+            <span className="font-medium">{app.status}</span>
           </div>
+
+          <Separator />
+
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Created At</span>
+            <span className="font-medium">{createdAt}</span>
+          </div>
+
+          <Separator />
+
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Submitted At</span>
+            <span className="font-medium">
+              {submittedAt}
+            </span>
+          </div>
+
+          <Separator />
+
+          <div className="flex flex-col gap-1">
+            <span className="text-muted-foreground">Notes</span>
+            <span className="font-medium whitespace-pre-wrap break-words">{app.notes || "-"}</span>
+          </div>
+          </>
+          )}
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Supporting Documents</CardTitle>
+          <CardTitle>Supporting Documents ({docs.length})</CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-3">
-          {documents.map((doc, index) => (
+          {docs.length === 0 ? (
+            <div className="text-muted-foreground">No documents.</div>
+          ) : docs.map((doc) => (
             <div
-              key={index}
+              key={doc.id}
               className="flex items-center justify-between border rounded-lg p-3"
             >
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-muted-foreground" />
-                <span>{doc.name}</span>
+                <div className="flex flex-col">
+                  <span>{doc.originalName}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Uploaded {new Date(doc.uploadedAt).toLocaleString()}
+                  </span>
+                </div>
               </div>
 
-              <Link to={doc.url} target="_blank" rel="noreferrer">
-                <Button variant="outline" size="sm">
-                  <Download className="w-4 h-4 mr-1" />
-                  View
-                </Button>
-              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void download(doc.id, doc.originalName)}
+              >
+                <Download className="w-4 h-4 mr-1" />
+                Download
+              </Button>
             </div>
           ))}
         </CardContent>
       </Card>
-
-      <div className="flex justify-between items-center">
-        <Link to="/dashboard/applications">
-          <Button variant="outline" className="gap-2 bg-blue-700 text-white">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Applications
-          </Button>
-        </Link>
-      </div>
     </div>
   );
 };
