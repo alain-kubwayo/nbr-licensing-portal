@@ -5,7 +5,6 @@ import { AppService } from './app.service';
 import { ApplicationModule } from './applications/application.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
-import { LocalStrategy } from './auth/strategies/local.strategies';
 import DatabaseModule from './db/database.module';
 import { DocumentModule } from './documents/document.module';
 import { UserModule } from './users/user.module';
@@ -23,6 +22,6 @@ import { UserModule } from './users/user.module';
     DocumentModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LocalStrategy],
+  providers: [AppService],
 })
 export class AppModule {}

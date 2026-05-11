@@ -103,10 +103,9 @@ All protected endpoints require `Authorization: Bearer <token>`.
 
 ### Auth
 
-| Method | Path        | Access   | Description         |
-| ------ | ----------- | -------- | ------------------- |
-| POST   | /auth/login | Public   | Obtain JWT token    |
-| GET    | /auth/me    | REVIEWER | Get current profile |
+| Method | Path        | Access | Description      |
+| ------ | ----------- | ------ | ---------------- |
+| POST   | /auth/login | Public | Obtain JWT token |
 
 ### Applications
 
@@ -144,18 +143,3 @@ DRAFT → SUBMITTED → UNDER_REVIEW → INFO_REQUESTED → RESUBMITTED
 ```
 
 Documents can only be uploaded when the application is in `DRAFT` or `INFO_REQUESTED` status.
-
----
-
-## Available Scripts
-
-| Script                    | Description                                        |
-| ------------------------- | -------------------------------------------------- |
-| `pnpm start:dev`          | Start in watch mode                                |
-| `pnpm build`              | Compile TypeScript                                 |
-| `pnpm migration:run`      | Run all pending migrations                         |
-| `pnpm migration:generate` | Generate a new migration from entity changes       |
-| `pnpm migration:revert`   | Revert the last migration                          |
-| `pnpm seed`               | Seed the database with demo users and applications |
-| `pnpm docker-db:start`    | Start PostgreSQL via Docker Compose                |
-| `pnpm docker-db:stop`     | Stop PostgreSQL container                          |
